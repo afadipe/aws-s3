@@ -15,6 +15,13 @@ resource "aws_s3_bucket" "backend" {
   }
 }
 
+# resource "aws_s3_bucket_logging" "backend_logging" {
+#   bucket = aws_s3_bucket.example.id
+
+#   target_bucket = aws_s3_bucket.log_bucket.id
+#   target_prefix = "log/"
+# }
+
 #2. create s3 bucket acl
 resource "aws_s3_bucket_acl" "terraform_state_acl" {
   bucket        = aws_s3_bucket.terraform_state.id
@@ -39,8 +46,7 @@ resource "aws_kms_key" "my_key" {
 
 #5. bucket encryption
 resource "aws_s3_bucket_server_side_encryption_configuration" "bucket_encrypt_config" {
-  bucket = aws_s3_bucket.backend.id
-
+  bucket = aws_s3_bucket.backend.bucket
   rule {
     apply_server_side_encryption_by_default {
       kms_master_key_id = aws_kms_key.my_key.arn
