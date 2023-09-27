@@ -9,6 +9,10 @@ resource "aws_s3_bucket" "backend" {
     Name        = "My s3 backend"
     Environment = "Dev-Test"
   }
+  logging {
+    target_bucket = "${aws_s3_bucket.backend.id}"
+    target_prefix = "log/"
+  }
 }
 
 #2. create s3 bucket acl
