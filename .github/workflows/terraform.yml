@@ -19,20 +19,27 @@ jobs:
       # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file
       - name: HashiCorp - Setup Terraform
         uses: hashicorp/setup-terraform@v2.0.3
+      - name: Set up python
+        uses: actions/setup-python@v4
+      - name: install python packages
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyhcl
       # Checks that all Terraform configuration files adhere to a canonical format
       - name: Terraform Format
-        run: terraform fmt -check
+        run: terraform fmt -diff -write=true -recursive
       # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
       - name: Terraform Init
-        run: |
-          eval `ssh-agent -s`
-          ssh-add - <<< '${{ secrets.SSH_KEY_GITHUB_ACTIONS}}'
-          terraform init
+        run: terraform init
       # Validates the configuration used in the GitHub Action workflow
       - name: Terraform Validate
         run: terraform validate
       # Generates an execution plan for Terraform
       - name: Terraform Plan
-        run: terraform plan 
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
+        run: terraform plan -out=tfplan
+      - name: Terraform Show
+        run: terraform show  -json ./tfplan  > tfplan.json
+      - name: Checkov GitHub Action
+        uses: bridgecrewio/checkov-action@v12.1347.0
+      # - name: Terraform Apply
+      #   run: terraform apply -auto-approve
