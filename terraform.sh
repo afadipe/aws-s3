@@ -2,7 +2,6 @@
 #!/bin/bash
 #tfsec checkov
 set -x
-pip install wget
 
 export TF_LOG="DEBUG"
 export TF_LOG_PATH="./terraform.log"
@@ -10,13 +9,13 @@ export TF_LOG_PATH="./terraform.log"
 ENV=dev
 TF_PATH=${ENV}.tfplan
 
+#https://spacelift.io/blog/what-is-tfsec  https://spacelift.io/blog/devops-pipeline
 # URL="https://github.com/tfsec/tfsec/releases/download/v1.28.1/tfsec-darwin-amd64"
 
 # echo $(date) 'Running wget...'
 # wget   ${URL}
- 
 # chmod +x tfsec-darwin-amd64
-# mv  tfsec-darwin-amd64 /usr/local/bin/tfsec
+# mv  tfsec-darwin-amd64  /usr/local/bin/tfsec
 
 
 [ -d .terraform ] && rm -rf .terraform

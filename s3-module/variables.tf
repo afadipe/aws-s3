@@ -7,6 +7,12 @@ variable "region" {
   type    = string
   default = "eu-north-1"
 }
+#region
+variable "aws-destination-region" {
+  type    = string
+  default = "eu-central-1"
+}
+
 #versioning
 variable "versioning" {
   type    = string
