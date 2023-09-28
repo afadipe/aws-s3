@@ -10,10 +10,24 @@ resource "aws_s3_bucket" "source_bucket" {
     Environment = "Dev-Test"
   }
   logging {
-    target_bucket = aws_s3_bucket.source_bucket.id
+    target_bucket = aws_s3_bucket.log_bucket.id
     target_prefix = "log/"
   }
 }
+
+resource "aws_s3_bucket" "log_bucket" {
+  bucket = "mylearning-345-tf-log-bucket"
+   lifecycle {
+    prevent_destroy = true
+  }
+  acl    = "private"
+}
+
+resource "aws_s3_bucket_acl" "log_bucket_acl" {
+  bucket = aws_s3_bucket.log_bucket.id
+  acl    = "log-delivery-write"
+}
+
 #2. create s3 bucket acl
 resource "aws_s3_bucket_acl" "terraform_state_acl" {
   bucket = aws_s3_bucket.source_bucket.id
@@ -67,13 +81,10 @@ resource "random_integer" "priority" {
 ## configuring replication
 
 resource "aws_s3_bucket_replication_configuration" "replication" {
-  provider = aws.central
   # Must have bucket versioning enabled first
   depends_on = [aws_s3_bucket_versioning.source_versioning]
-
   role   = aws_iam_role.replication.arn
   bucket = aws_s3_bucket.source_bucket.id
-
   rule {
     id     = "tf-s3-replication-rule"
     status = "Enabled"

@@ -5,13 +5,37 @@ resource "aws_s3_bucket" "destination" {
   versioning {
     enabled = true
   }
+  logging {
+    target_bucket = aws_s3_bucket.log_bucket.id
+    target_prefix = "log/"
+  }
 }
 
-resource "aws_s3_bucket_versioning" "destination" {
+#3. block public access
+resource "aws_s3_bucket_public_access_block" "dest_public_access" {
+  bucket                  = aws_s3_bucket.destination.id
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+resource "aws_s3_bucket_versioning" "destination_versioning" {
   provider = aws.dest
   bucket = aws_s3_bucket.destination.id
   versioning_configuration {
     status = "Enabled"
+  }
+}
+
+#5. bucket encryption
+resource "aws_s3_bucket_server_side_encryption_configuration" "dest_bucket_encrypt_config" {
+  bucket = aws_s3_bucket.destination.bucket
+  rule {
+    apply_server_side_encryption_by_default {
+      kms_master_key_id = aws_kms_key.my_key.arn
+      sse_algorithm     = "aws:kms"
+    }
   }
 }
 
