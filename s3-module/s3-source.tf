@@ -11,10 +11,10 @@ resource "aws_s3_bucket" "source_bucket" {
   }
 }
 
-resource "aws_s3_bucket_acl" "source_bucket_acl" {
-  bucket = aws_s3_bucket.source_bucket.id
-  acl    = "private"
-}
+# resource "aws_s3_bucket_acl" "source_bucket_acl" {
+#   bucket = aws_s3_bucket.source_bucket.id
+#   acl    = "private"
+# }
 
 resource "aws_s3_bucket" "log_bucket" {
   bucket = "mylearning-345-tf-log-bucket"
