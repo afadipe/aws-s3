@@ -1,14 +1,30 @@
 resource "aws_s3_bucket" "destination" {
   provider = aws.dest
   bucket = "tf-bucket-destination-12345"
+}
+
+resource "aws_s3_bucket" "dest_log_bucket" {
+  bucket = "dest-tf-log-bucket"
+   lifecycle {
+    prevent_destroy = true
+  }
+}
+
+resource "aws_s3_bucket_acl" "dest_log_bucket_acl" {
+  bucket = aws_s3_bucket.dest_log_bucket.id
+  acl    = "log-delivery-write"
+}
+
+resource "aws_s3_bucket_logging" "dest_bucket_logging" {
+  bucket = aws_s3_bucket.destination.id
+  target_bucket = aws_s3_bucket.dest_log_bucket.id
+  target_prefix = "log/"
+}
+
+
+resource "aws_s3_bucket_acl" "destination_acl" {
+  bucket = aws_s3_bucket.destination.id
   acl    = "private"
-  versioning {
-    enabled = true
-  }
-  logging {
-    target_bucket = aws_s3_bucket.log_bucket.id
-    target_prefix = "log/"
-  }
 }
 
 #3. block public access

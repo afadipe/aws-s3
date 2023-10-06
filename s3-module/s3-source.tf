@@ -1,6 +1,6 @@
 # s3 bucket for terraform backend
 resource "aws_s3_bucket" "source_bucket" {
-  bucket = "devopsbootcamp32-${lower(var.env)}-${random_integer.priority.result}"
+  bucket = "personal32-${lower(var.env)}-${random_integer.priority.result}"
   # Prevent accidental deletion of this S3 bucket
   lifecycle {
     prevent_destroy = true
@@ -9,10 +9,11 @@ resource "aws_s3_bucket" "source_bucket" {
     Name        = "My s3 backend"
     Environment = "Dev-Test"
   }
-  logging {
-    target_bucket = aws_s3_bucket.log_bucket.id
-    target_prefix = "log/"
-  }
+}
+
+resource "aws_s3_bucket_acl" "source_bucket_acl" {
+  bucket = aws_s3_bucket.source_bucket.id
+  acl    = "private"
 }
 
 resource "aws_s3_bucket" "log_bucket" {
@@ -20,12 +21,18 @@ resource "aws_s3_bucket" "log_bucket" {
    lifecycle {
     prevent_destroy = true
   }
-  acl    = "private"
 }
 
 resource "aws_s3_bucket_acl" "log_bucket_acl" {
   bucket = aws_s3_bucket.log_bucket.id
   acl    = "log-delivery-write"
+}
+
+resource "aws_s3_bucket_logging" "bucket_logging" {
+  bucket = aws_s3_bucket.source_bucket.id
+
+  target_bucket = aws_s3_bucket.log_bucket.id
+  target_prefix = "log/"
 }
 
 #2. create s3 bucket acl
@@ -95,11 +102,11 @@ resource "aws_s3_bucket_replication_configuration" "replication" {
         owner = "Destination"
       }
     }
-    source_selection_criteria {
-      sse_kms_encrypted_objects {
-        enabled = false
-      }
-    }
+    # source_selection_criteria {
+    #   sse_kms_encrypted_objects {
+    #     enabled = false
+    #   }
+    # }
 
   }
 }
