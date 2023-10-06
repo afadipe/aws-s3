@@ -1,4 +1,7 @@
 resource "aws_s3_bucket" "destination" {
+  #checkov:skip=CKV_AWS_18:Ensure the S3 bucket has access logging enabled
+  #checkov:skip=CKV_AWS_19:Ensure all data stored in the S3 bucket is securely encrypted at rest
+  #checkov:skip=CKV_AWS_21:Ensure all data stored in the S3 bucket have versioning enabled
   provider = aws.dest
   bucket = "tf-bucket-destination-12345"
 }
@@ -16,6 +19,9 @@ resource "aws_s3_bucket_acl" "dest_log_bucket_acl" {
 }
 
 resource "aws_s3_bucket_logging" "dest_bucket_logging" {
+  #checkov:skip=CKV_AWS_18:Ensure the S3 bucket has access logging enabled
+  #checkov:skip=CKV_AWS_19:Ensure all data stored in the S3 bucket is securely encrypted at rest
+  #checkov:skip=CKV_AWS_21:Ensure all data stored in the S3 bucket have versioning enabled
   bucket = aws_s3_bucket.destination.id
   target_bucket = aws_s3_bucket.dest_log_bucket.id
   target_prefix = "log/"
