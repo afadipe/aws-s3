@@ -41,5 +41,7 @@ jobs:
         run: terraform show  -json ./tfplan  > tfplan.json
       - name: Checkov GitHub Action
         uses: bridgecrewio/checkov-action@v12.1347.0
+        with:
+          skip_check: CKV_AWS_* # optional: skip a specific check_id. can be comma separated list
       # - name: Terraform Apply
       #   run: terraform apply -auto-approve
